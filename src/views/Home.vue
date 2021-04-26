@@ -1,0 +1,142 @@
+<template>
+<!-- eslint-disable -->
+  <div class="home">
+    <b-row class="m-5">
+      <b-col v-if="isEntering==='yes'">
+        <b-button variant="primary" @click="entry">Registrar entrada</b-button>
+      </b-col>
+    </b-row>
+    <b-row class="m-5" v-if="isEntering==='no'">
+      <b-col v-if="isPausing==='yes'">
+        <b-button v-b-toggle.pauseCollapse>Registrar pausa</b-button>
+        <b-collapse id="pauseCollapse" class="  mt-2">
+          <b-form v-on:submit="pause">                    
+            <div class="form-group">
+              <b-input-group prepend="Razón">
+                <b-form-input type="text" v-model="reason" class="form-control" name="reason" placeholder="Razón para la pausa"></b-form-input>
+              </b-input-group>
+            </div>
+            <div class="form-group">
+              <button class="btn btn-warning btn-block" type="submit">Registrar pausa</button>
+            </div>
+          </b-form>
+        </b-collapse>
+      </b-col>
+      <b-col v-if="isPausing==='no'">
+        <b-button @click="pause">Terminar pausa</b-button>       
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col v-show="(isEntering === 'no' )&& (isPausing === 'yes')">
+        <b-button variant="danger" @click="exit">Registrar Salida</b-button>
+      </b-col>
+    </b-row>
+  </div>
+</template>
+
+<script>
+import axios from 'axios'
+import VueJwtDecode from "vue-jwt-decode";
+export default {
+  name: "Home",
+  components: {        
+  },
+  data() {
+    return {
+      isEntering: "yes",
+      isPausing: "no",      
+      reason: '',
+      full_name: ''
+    }
+  },
+  methods:{
+    extractUser() {
+      let token = localStorage.getItem("usertoken");
+      if (token) {
+        let decoded = VueJwtDecode.decode(token);        
+        this.full_name = decoded.full_name        
+        console.log(decoded)
+      }
+    },
+    pause(){                       
+      if(this.isPausing === "yes") {
+        axios.post('http://localhost:8080/pauseIn', //herokuapp
+          {
+            reason:this.reason,
+            full_name:this.full_name
+          }).then(res => {
+            if (res.data.error) {
+              console.log(res.data.error);
+              return ;
+            }            
+            console.log(res)
+          }).catch(err => {
+            console.log(err);
+          })
+        localStorage.isPausing = "no"
+        
+      }
+      if(this.isPausing === "no") {
+        axios.post('http://localhost:8080/pauseOut',
+          {
+            full_name:this.full_name
+          }).then(res => {
+            if (res.data.error) {
+                console.log(res.data.error);
+                return ;
+              }            
+              console.log(res)
+          }).catch(err => {
+              console.log(err);
+          })
+        localStorage.isPausing = "yes"
+        
+      }
+      window.location.reload()
+    },
+    entry(){
+      axios.post('http://localhost:8080/entry',
+        {
+          full_name:this.full_name
+        }).then(res => {
+          if (res.data.error) {
+              console.log(res.data.error);
+              return ;
+            }            
+            console.log(res)
+        }).catch(err => {
+            console.log(err);
+        })
+        localStorage.isEntering = "no"
+        localStorage.isPausing = "yes"
+        window.location.reload()
+        
+    },
+    exit(){
+      axios.post('https://edyfica-server.herokuapp.com/exit',
+        {
+          full_name:this.full_name
+        }).then(res => {
+          if (res.data.error) {
+              console.log(res.data.error);
+              return ;
+            }            
+            console.log(res)
+        }).catch(err => {
+            console.log(err);
+        })
+        localStorage.isEntering = "yes"
+        localStorage.isPausing = "no"
+        window.location.reload()
+        
+    }
+  },
+  mounted(){
+    this.extractUser()
+    if(localStorage.isEntering){ this.isEntering = localStorage.isEntering}
+    if(localStorage.isPausing) {this.isPausing = localStorage.isPausing }
+    console.log(this.isEntering)   
+    console.log(this.isPausing)
+  }
+};
+</script>
