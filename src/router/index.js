@@ -43,7 +43,7 @@ let router = new Router({
       component: Admin,
       meta: {
           requiresAuth: true,
-          isAdmin : true
+          admin:true  
       }
   },
   ],
@@ -61,9 +61,6 @@ router.beforeEach((to,from, next) => {
       if (token) {
         let decoded = VueJwtDecode.decode(token);
         let user = decoded;
-        if (user.isAdmin === true) {
-          this.meta.isAdmin = true
-        }
         if (user) next();
       }
     }
@@ -71,7 +68,22 @@ router.beforeEach((to,from, next) => {
     if (localStorage.getItem("usertoken") == null) {
       next();
     }
-  } else {
+  } else if(to.matched.some((record) => record.meta.admin)) {
+    if (localStorage.getItem("usertoken") == null) {
+      next({
+        path: "/login",
+        params: { nextUrl: to.fullPath },
+      });
+    } else {
+      let token = localStorage.getItem("usertoken");
+      if (token) {
+        let decoded = VueJwtDecode.decode(token);
+        let user = decoded;
+        if (user.isAdmin === true) next();
+      }
+    }
+  }
+  else {
     next();
   }
 });
