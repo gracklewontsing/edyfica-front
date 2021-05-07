@@ -79,11 +79,11 @@ export default {
               return ;
             }            
             console.log(res)                                    
+            localStorage.isPausing = "no"
+            window.location.reload()  
           }).catch(err => {
             console.log(err);
-          })                
-        localStorage.isPausing = "no"
-        window.location.reload()                                      
+          })                                                            
     },
     pauseOut(){
       axios.post('https://edyfica-server.herokuapp.com/pauseOut',
@@ -93,13 +93,13 @@ export default {
             if (res.data.error) {
                 console.log(res.data.error);
                 return ;
-              }            
+              }     
             console.log(res)                                    
+            localStorage.isPausing = "yes"        
+            window.location.reload()                    
           }).catch(err => {
               console.log(err);
-          })        
-        localStorage.isPausing = "yes"        
-        window.location.reload() 
+          })                
     },
     entry(){
       axios.post('https://edyfica-server.herokuapp.com/entry',
