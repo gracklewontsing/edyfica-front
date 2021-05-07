@@ -2,12 +2,12 @@
 <!-- eslint-disable -->
   <div class="home">
     <b-row class="m-5">
-      <b-col v-if="isEntering==='yes'">
+      <b-col v-if="isEntering==='yes'" :key="componentKey">
         <b-button variant="primary" @click="entry">Registrar entrada</b-button>
       </b-col>
     </b-row>
     <b-row class="m-5" v-if="isEntering==='no'">
-      <b-col v-if="isPausing==='yes'">
+      <b-col v-if="isPausing==='yes'" :key="componentKey">
         <b-button v-b-toggle.pauseCollapse>Registrar pausa</b-button>
         <b-collapse id="pauseCollapse" class="  mt-2">
           
@@ -17,16 +17,16 @@
               </b-input-group>
             </div>
             <div class="form-group">
-              <button class="btn btn-warning btn-block"  @click="pause">Registrar pausa</button>
+              <button class="btn btn-warning btn-block" @click="pause">Registrar pausa</button>
             </div>          
         </b-collapse>
       </b-col>
-      <b-col v-if="isPausing==='no'">
+      <b-col v-if="isPausing==='no'" :key="componentKey">
         <b-button @click="pauseOut">Terminar pausa</b-button>       
       </b-col>
     </b-row>
     <b-row>
-      <b-col v-show="(isEntering === 'no' )&& (isPausing === 'yes')">
+      <b-col v-show="(isEntering === 'no' )&& (isPausing === 'yes')" :key="componentKey">
         <b-button variant="danger" @click="exit">Registrar Salida</b-button>
       </b-col>
     </b-row>
@@ -55,10 +55,16 @@ export default {
       isEntering: "yes",
       isPausing: "no",      
       reason: '',
-      full_name: ''
+      full_name: '',
+      componentKey:0,
     }
   },
   methods:{
+    forceRerender() {
+      this.componentKey += 1
+      if(localStorage.isEntering){this.isEntering = localStorage.isEntering}
+      if(localStorage.isPausing) {this.isPausing = localStorage.isPausing }
+    },
     extractUser() {
       let token = localStorage.getItem("usertoken");
       if (token) {
@@ -77,12 +83,12 @@ export default {
               return ;
             }            
             localStorage.isPausing = "no"
-            console.log(res)                                                
+            console.log(res)   
           }).catch(err => {
             console.log(err);
-          })                             
-          localStorage.isPausing = "no"                                 
-          window.location.reload()          
+          })                                    
+          localStorage.isPausing = "no"   
+          this.forceRerender()                                           
     },
     pauseOut(){
       axios.post('https://edyfica-server.herokuapp.com/pauseOut',
@@ -93,13 +99,16 @@ export default {
                 console.log(res.data.error);
                 return ;
               }     
-            console.log(res)                                    
-            localStorage.isPausing = "yes"                                      
+            if(!res){
+              this.pauseOut()
+            }
+            localStorage.isPausing = "yes"     
+            console.log(res)                                                                                 
           }).catch(err => {
               console.log(err);
           })                
-          localStorage.isPausing = "yes"
-          window.location.reload()  
+          localStorage.isPausing = "yes"  
+          this.forceRerender()     
     },
     entry(){
       axios.post('https://edyfica-server.herokuapp.com/entry',
@@ -112,11 +121,11 @@ export default {
             }            
           console.log(res)
           localStorage.isEntering = "no"
-          localStorage.isPausing = "yes"
-          window.location.reload()
+          localStorage.isPausing = "yes"          
+          this.forceRerender()
         }).catch(err => {
             console.log(err);
-        })                
+        })                                
     },
     exit(){
       axios.post('https://edyfica-server.herokuapp.com/exit',
@@ -129,11 +138,12 @@ export default {
             }            
           console.log(res)
           localStorage.isEntering = "yes"
-          localStorage.isPausing = "no"
-          window.location.reload()
+          localStorage.isPausing = "no"    
+          this.forceRerender()      
         }).catch(err => {
             console.log(err);
         })                
+        this.forceRerender()
     }
   },
   mounted(){
