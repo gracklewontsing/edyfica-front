@@ -23,7 +23,7 @@
         </b-collapse>
       </b-col>
       <b-col v-if="isPausing==='no'">
-        <b-button @click="pause">Terminar pausa</b-button>       
+        <b-button @click="pauseOut">Terminar pausa</b-button>       
       </b-col>
     </b-row>
     <b-row>
@@ -58,8 +58,7 @@ export default {
         console.log(decoded)
       }
     },
-    pause(){                       
-      if(this.isPausing === "yes") {
+    pause(){                             
         axios.post('https://edyfica-server.herokuapp.com/pauseIn', //herokuapp
           {
             pauseReason:this.reason,
@@ -74,10 +73,10 @@ export default {
             console.log(err);
           })                
         localStorage.isPausing = "no"
-        window.location.reload() 
-      }
-      if(this.isPausing === "no") {
-        axios.post('https://edyfica-server.herokuapp.com/pauseOut',
+        window.location.reload()                                      
+    },
+    pauseOut(){
+      axios.post('https://edyfica-server.herokuapp.com/pauseOut',
           {
             full_name:this.full_name
           }).then(res => {
@@ -91,7 +90,6 @@ export default {
           })        
         localStorage.isPausing = "yes"        
         window.location.reload() 
-      }           
     },
     entry(){
       axios.post('https://edyfica-server.herokuapp.com/entry',
@@ -130,7 +128,7 @@ export default {
   },
   mounted(){
     this.extractUser()
-    if(localStorage.isEntering){ this.isEntering = localStorage.isEntering}
+    if(localStorage.isEntering){this.isEntering = localStorage.isEntering}
     if(localStorage.isPausing) {this.isPausing = localStorage.isPausing }
     console.log("entrando: "+this.isEntering)   
     console.log("pausando: " +this.isPausing)
