@@ -20,8 +20,8 @@
       <b-tbody>
         <b-tr v-for="(item) in items" :key="item.full_name">
           <b-th>{{item.full_name}}</b-th>
-          <b-td>{{item.entryDayTime}}</b-td>
-          <b-td>{{item.exitDayTime}}</b-td>
+          <b-td>{{new Date(item.rawEntry).toLocaleTimeString('es-MX',{ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',hour:"2-digit", minute:"numeric",second:"numeric"})}}</b-td>
+          <b-td>{{new Date(item.rawExit).toLocaleTimeString('es-MX',{ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',hour:"2-digit", minute:"numeric",second:"numeric"})}}</b-td>
           <b-tr v-for="pause in item.pauses" :key="pause.reason">            
             <b-td>Razón: {{pause.pauseReason}}</b-td>
             <b-td>Duración: {{pause.pauseDuration}}</b-td>
