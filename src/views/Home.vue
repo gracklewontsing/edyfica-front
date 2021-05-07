@@ -10,16 +10,15 @@
       <b-col v-if="isPausing==='yes'">
         <b-button v-b-toggle.pauseCollapse>Registrar pausa</b-button>
         <b-collapse id="pauseCollapse" class="  mt-2">
-          <b-form v-on:submit="pause">                    
+          
             <div class="form-group">
               <b-input-group prepend="Razón">
                 <b-form-input type="text" v-model="reason" class="form-control" name="reason" placeholder="Razón para la pausa"></b-form-input>
               </b-input-group>
             </div>
             <div class="form-group">
-              <button class="btn btn-warning btn-block" type="submit">Registrar pausa</button>
-            </div>
-          </b-form>
+              <button class="btn btn-warning btn-block"  @click="pause">Registrar pausa</button>
+            </div>          
         </b-collapse>
       </b-col>
       <b-col v-if="isPausing==='no'">
@@ -64,8 +63,7 @@ export default {
       let token = localStorage.getItem("usertoken");
       if (token) {
         let decoded = VueJwtDecode.decode(token);        
-        this.full_name = decoded.full_name        
-        console.log(decoded)
+        this.full_name = decoded.full_name                
       }
     },
     pause(){                             
@@ -78,12 +76,13 @@ export default {
               console.log(res.data.error);
               return ;
             }            
-            console.log(res)                                    
             localStorage.isPausing = "no"
-            window.location.reload()  
+            console.log(res)                                                
           }).catch(err => {
             console.log(err);
-          })                                                            
+          })                             
+          localStorage.isPausing = "no"                                 
+          window.location.reload()          
     },
     pauseOut(){
       axios.post('https://edyfica-server.herokuapp.com/pauseOut',
@@ -95,11 +94,12 @@ export default {
                 return ;
               }     
             console.log(res)                                    
-            localStorage.isPausing = "yes"        
-            window.location.reload()                    
+            localStorage.isPausing = "yes"                                      
           }).catch(err => {
               console.log(err);
           })                
+          localStorage.isPausing = "yes"
+          window.location.reload()  
     },
     entry(){
       axios.post('https://edyfica-server.herokuapp.com/entry',
