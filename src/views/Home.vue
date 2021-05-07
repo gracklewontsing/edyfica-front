@@ -35,10 +35,12 @@
     <h1>Instrucciones</h1>
     <p>Presionar el boton 'Registrar Entrada' para iniciar la asistencia.</p>
     <p>El boton 'Registrar Entrada' desaparece cuando ya ha sido registrada la asistencia.</p>
+    <p>Los demás botones también desaparecen dependiendo de su estado de asistencia.</p>
     <p>Para registrar pausas, se deben registrar cuando se ha registrado la entrada, y requiere especificar la razón de la pausa.</p>
     <p>Las pausas necesitan registrar sus horas de termino, de lo contrario no podra registrar entradas, salidas, u otras pausas</p>
-    <p>Para registrar la pausa, se presiona el botón al momento que termina su pausa.</p>
+    <p>Para registrar el final de la pausa, se presiona el botón al momento que termina su pausa.</p>
     <p>Para registrar la salida, no debe de haber pausas sin terminar, y debe presionar el botón de terminar salida.</p>
+    <p>Habiendo registrado la salida, se rehabilita el botón de 'Registrar entrada'. Esto significa que su salida ha sido registrada, y puede cerrar sesión hasta su proximo turno. </p>
   </div>
 </template>
 
