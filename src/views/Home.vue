@@ -69,12 +69,12 @@ export default {
               console.log(res.data.error);
               return ;
             }            
-            console.log(res)
-            localStorage.isPausing = "no"
-            window.location.reload()
+            console.log(res)                                    
           }).catch(err => {
             console.log(err);
           })                
+        localStorage.isPausing = "no"
+        window.location.reload() 
       }
       if(this.isPausing === "no") {
         axios.post('https://edyfica-server.herokuapp.com/pauseOut',
@@ -85,13 +85,13 @@ export default {
                 console.log(res.data.error);
                 return ;
               }            
-            console.log(res)            
-            localStorage.isPausing = "yes"        
-            window.location.reload()
+            console.log(res)                                    
           }).catch(err => {
               console.log(err);
           })        
-      }      
+        localStorage.isPausing = "yes"        
+        window.location.reload() 
+      }           
     },
     entry(){
       axios.post('https://edyfica-server.herokuapp.com/entry',
@@ -132,8 +132,8 @@ export default {
     this.extractUser()
     if(localStorage.isEntering){ this.isEntering = localStorage.isEntering}
     if(localStorage.isPausing) {this.isPausing = localStorage.isPausing }
-    console.log(this.isEntering)   
-    console.log(this.isPausing)
+    console.log("entrando: "+this.isEntering)   
+    console.log("pausando: " +this.isPausing)
   }
 };
 </script>
