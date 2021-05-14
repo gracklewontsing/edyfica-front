@@ -5,6 +5,7 @@ import Login from "../views/Login";
 import Register from "@/views/register";
 //import User from "@/components/User";
 import Admin from "@/views/Admin";
+import Inventory from "@/views/Inventory";
 
 import VueJwtDecode from "vue-jwt-decode";
 
@@ -35,6 +36,14 @@ let router = new Router({
       component: Register,
       meta: {
         guest: true,
+      },
+    },
+    {
+      path: "/inventory",
+      name: "Inventory",
+      component: Inventory,
+      meta: {
+        requiresAuth:true,
       },
     },
     {

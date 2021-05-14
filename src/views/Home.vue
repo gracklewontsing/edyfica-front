@@ -3,6 +3,9 @@
   <div class="home">
     <b-row class="m-5">
       <b-col v-if="isEntering==='yes'" :key="componentKey">
+        <b-input-group prepend="Comentarios">
+          <b-form-input type="text" v-model="enter" class="form-control" name="entryComments" placeholder="Comentarios de entrada"></b-form-input>
+        </b-input-group>
         <b-button variant="primary" @click="entry">Registrar entrada</b-button>
       </b-col>
     </b-row>
@@ -27,6 +30,9 @@
     </b-row>
     <b-row>
       <b-col v-show="(isEntering === 'no' )&& (isPausing === 'yes')" :key="componentKey">
+        <b-input-group prepend="Comentarios">
+          <b-form-input type="text" v-model="exits" class="form-control" name="exitComments" placeholder="Comentarios de salida"></b-form-input>
+        </b-input-group>
         <b-button variant="danger" @click="exit">Registrar Salida</b-button>
       </b-col>
     </b-row>
@@ -55,6 +61,8 @@ export default {
       isEntering: "yes",
       isPausing: "no",      
       reason: '',
+      enter:'',
+      exits:'',
       full_name: '',
       componentKey:0,
     }
@@ -113,7 +121,8 @@ export default {
     entry(){
       axios.post('https://edyfica-server.herokuapp.com/entry',
         {
-          full_name:this.full_name
+          full_name:this.full_name,
+          entryComments: this.enter
         }).then(res => {
           if (res.data.error) {
               console.log(res.data.error);
@@ -130,7 +139,8 @@ export default {
     exit(){
       axios.post('https://edyfica-server.herokuapp.com/exit',
         {
-          full_name:this.full_name
+          full_name:this.full_name,
+          exitComments:this.exits
         }).then(res => {
           if (res.data.error) {
               console.log(res.data.error);

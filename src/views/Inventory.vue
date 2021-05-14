@@ -1,14 +1,13 @@
 <template>
   <div>    
-    <b-button v-b-toggle.collapse-1>Agregar Articulo</b-button>
-    <b-collapse id="collapse-1" class="mt-2">
-      <b-card>
-        <b-form @submit="addArticle">
+    <b-button v-b-toggle.collapse-1 class="my-4">{{collapsed ? "Cerrar Formato": "Agregar Articulo"}}</b-button>
+    <b-collapse id="collapse-1" class="mt-2" v-model="collapsed">
+      <b-card>        
           <b-input-group prepend="Nombre" class="mb-2 mr-sm-2 mb-sm-0">
             <b-form-input id="name-input" placeholder="Nombre" v-model="article.name" required></b-form-input>
           </b-input-group>
           <b-input-group prepend="Descripción" class="mb-2 mr-sm-2 mb-sm-0">
-            <b-form-text id="desc-input" placeholder="Descripción" v-model="article.description" required></b-form-text>
+            <b-form-input id="desc-input" placeholder="Descripción" v-model="article.description" required></b-form-input>
           </b-input-group>
           <b-input-group prepend="Cantidad" class="mb-2 mr-sm-2 mb-sm-0">
             <b-form-spinbutton id="quantity-input" v-model="article.amount" min="1" max="100"></b-form-spinbutton>
@@ -20,28 +19,28 @@
             <b-form-input id="place-input" placeholder="Fecha" v-model="article.acquiredAt" required></b-form-input>
           </b-input-group>
           <b-input-group prepend="Area" class="mb-2 mr-sm-2 mb-sm-0">
-            <Selector v-model="article.area"/>        
+            <b-form-select v-model="article.area" :options="options"/>        
           </b-input-group>
           <b-input-group prepend="Proyecto" class="mb-2 mr-sm-2 mb-sm-0">
             <b-form-input id="project-input" placeholder="Proyecto" v-model="article.project" required></b-form-input>
           </b-input-group>
           <b-input-group prepend="Comentarios" class="mb-2 mr-sm-2 mb-sm-0">
-            <b-form-text id="comments-input" placeholder="Comentarios" v-model="article.comments" required></b-form-text>
+            <b-form-input id="comments-input" placeholder="Comentarios" v-model="article.comments" required></b-form-input>
           </b-input-group>
-          <b-button type="submit" variant="primary">Agregar</b-button>
-        </b-form>
+          <b-button @click="addArticle" variant="primary">Agregar</b-button>        
       </b-card>
-    </b-collapse> 
-    <Selector v-model="selected" @input="getItems(selected)"/>
-    <b-table striped :items="items" :fields="fields" :key="tableKey" striped-responsive="sm">
+    </b-collapse>     
+    <br>    
+    <b-form-select v-model="selected" :options="options" @input="getItems(selected)" class="my-2 w-75"></b-form-select>
+    <b-table class="mx-2" striped :items="items" :fields="fields" :key="tableKey" striped-responsive="sm">
       <template #cell(show_details)="row">
-        <b-button size="sm" @click="row.toggleDetails" class="mr-2">
+        <b-button block size="sm" @click="row.toggleDetails" class="mr-1 my-1">
           {{ row.detailsShowing ? 'Esconder' : 'Ver'}} Detalles
         </b-button>        
-        <b-button size="sm" @click="info(item.id)" class="mr-1">
+        <b-button block size="sm" @click="info(row.item)" class="mr-1 my-1">
           Editar
         </b-button>
-        <b-button size="sm" @click="deleteArticle(item.id)" class="mr-1" variant="danger">
+        <b-button block size="sm" @click="deleteArticle(row.item._id)" class="mr-1 my-1" variant="danger">
           Borrar
         </b-button>
       </template>      
@@ -87,43 +86,41 @@
         </b-card>
       </template>
     </b-table>
-    <b-modal ref="my-modal" title="Editar Articulo">
-      <b-form @submit="updateArticle">
-          <b-input-group prepend="Nombre" class="mb-2 mr-sm-2 mb-sm-0">
-            <b-form-input id="name-input" placeholder="Nombre" v-model="update.name"></b-form-input>
-          </b-input-group>
-          <b-input-group prepend="Descripción" class="mb-2 mr-sm-2 mb-sm-0">
-            <b-form-text id="desc-input" placeholder="Descripción" v-model="update.description"></b-form-text>
-          </b-input-group>
-          <b-input-group prepend="Cantidad" class="mb-2 mr-sm-2 mb-sm-0">
-            <b-form-spinbutton id="quantity-input" v-model="update.amount" min="1" max="100"></b-form-spinbutton>
-          </b-input-group>
-          <b-input-group prepend="Precio" class="mb-2 mr-sm-2 mb-sm-0">
-            <b-form-input id="price-input" placeholder="0.00" type="number" v-model="update.price"></b-form-input>
-          </b-input-group>
-          <b-input-group prepend="Adquirido en" class="mb-2 mr-sm-2 mb-sm-0">
-            <b-form-input id="place-input" placeholder="Lugar" v-model="update.acquiredAt"></b-form-input>
-          </b-input-group>
-          <b-input-group prepend="Area" class="mb-2 mr-sm-2 mb-sm-0">
-            <Selector v-model="update.area"/>        
-          </b-input-group>
-          <b-input-group prepend="Proyecto" class="mb-2 mr-sm-2 mb-sm-0">
-            <b-form-input id="project-input" placeholder="Proyecto" v-model="update.project"></b-form-input>
-          </b-input-group>
-          <b-input-group prepend="Comentarios" class="mb-2 mr-sm-2 mb-sm-0">
-            <b-form-text id="comments-input" placeholder="Comentarios" v-model="update.comments"></b-form-text>
-          </b-input-group>
-          <b-button type="submit" variant="primary">Actualizar</b-button>
-        </b-form>
-    </b-modal>
+    <b-button @click="download" class="my-4">Exportar listado</b-button>
+    <b-modal ref="my-modal" title="Editar Articulo">      
+      <b-input-group prepend="Nombre" class="mb-2 mr-sm-2 mb-sm-0">
+        <b-form-input id="name-input" placeholder="Nombre" v-model="update.name"></b-form-input>
+      </b-input-group>
+      <b-input-group prepend="Descripción" class="mb-2 mr-sm-2 mb-sm-0">
+        <b-form-input id="desc-input" placeholder="Descripción" v-model="update.description"></b-form-input>
+      </b-input-group>
+      <b-input-group prepend="Cantidad" class="mb-2 mr-sm-2 mb-sm-0">
+        <b-form-spinbutton id="quantity-input" v-model="update.amount" min="1" max="100"></b-form-spinbutton>
+      </b-input-group>
+      <b-input-group prepend="Precio" class="mb-2 mr-sm-2 mb-sm-0">
+        <b-form-input id="price-input" placeholder="0.00" type="number" v-model="update.price"></b-form-input>
+      </b-input-group>
+      <b-input-group prepend="Adquirido en" class="mb-2 mr-sm-2 mb-sm-0">
+        <b-form-input id="place-input" placeholder="Fecha" v-model="update.acquiredAt"></b-form-input>
+      </b-input-group>
+      <b-input-group prepend="Area" class="mb-2 mr-sm-2 mb-sm-0">
+        <b-form-select v-model="update.area" :options="options"/>        
+      </b-input-group>
+      <b-input-group prepend="Proyecto" class="mb-2 mr-sm-2 mb-sm-0">
+        <b-form-input id="project-input" placeholder="Proyecto" v-model="update.project"></b-form-input>
+      </b-input-group>
+      <b-input-group prepend="Comentarios" class="mb-2 mr-sm-2 mb-sm-0">
+        <b-form-input id="comments-input" placeholder="Comentarios" v-model="update.comments"></b-form-input>
+      </b-input-group>
+      <b-button @click="updateArticle" variant="primary">Actualizar</b-button>        
+    </b-modal>    
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-import Selector from '@/components/Selector'
 export default {
-  components:{Selector},
+  components:{},
   data(){
     return{
       fields:[
@@ -137,10 +134,11 @@ export default {
           label:'Descripción',
           sortable:true,          
         },
-        "Detalles"
+        { key: 'show_details', label: 'Detalles' }
       ],
       items: [],   
-      selected: "",
+      collapsed:false,
+      selected: null,
       tableKey: 0,
       article: {
         name: "",
@@ -153,7 +151,7 @@ export default {
         comments:""
       },
       update: {
-        id:"",
+        _id:"",
         name: "",
         description:"",
         amount: "",
@@ -163,9 +161,35 @@ export default {
         project: "",
         comments:""
       },
+      options: [
+        {value:null, text:"Seleccione una area", disabled:true},
+        {value:'direccion', text:"Dirección"},
+        {value:'computo-direccion', text:"Dirección, equipo de computo"},
+        {value:'biblioteca', text:"Biblioteca"},        
+        {value:'talleres-edificio-2', text:"Talleres educativos Edificio 2"},
+        {value:'planta-baja-edificio-2', text:"Planta Baja, Edificio 2"},
+        {value:'oficina-varias', text:"Oficina Varias, Edificio 1"},
+        {value:'bodega-cancha', text:"Bodega de cancha"},
+        {value:'cocina-talleres', text:"Cocina de talleres"},
+        {value:'edificio-1-planta-baja', text:"Planta Baja, Edificio 1"},
+        {value:'recepcion', text:"Recepción"},
+        {value:'consultorio', text:"Consultorio"},
+        {value:'cocina-edificio-1', text:"Cocina, Edificio 1"},
+        {value:'salon-multiusos', text:"Salón multiusos"},
+        {value:'limpieza', text:"Limpieza"},
+        {value:'bodega-salon-multiusos', text:"Bodega, Salón Multiusos"},
+        {value:'bodega-debajo-escaleras', text:"Bodega debajo de las escaleras"},
+        {value:'baño-operativo', text:"Baño de operativo"},
+        {value:'afuera', text:"Afuera"},
+        {value:'sala-computo-1', text:"Salon de Computacion 1"},
+        {value:'sala-computo-2', text:"Salon de Computacion 2"}
+      ]   
     }
   },
   methods:{
+    forceRerender() {
+      this.tableKey += 1
+    },
     getItems(area){            
       axios.get(`https://edyfica-server.herokuapp.com/articles/${area}`)
       .then(res => {
@@ -174,13 +198,13 @@ export default {
           return;
         }            
         else {
-          this.items = res.data
-          this.forceRerender()
+          this.items = res.data          
         }
           console.log(res)
         }).catch(err => {
           console.log(err);
       })      
+      this.forceRerender()
     },
     addArticle(){
       axios.post(`https://edyfica-server.herokuapp.com/article/create`,{
@@ -197,42 +221,16 @@ export default {
         if (res.data.error) {
           console.log(res.data.error);
           return;
-        }            
-        else {                    
-          this.forceRerender()
-        }
-          console.log(res)
+        }                    
+        console.log(res)
         }).catch(err => {
           console.log(err);
       })
+      this.forceRerender()
     },
     updateArticle(){
-      if(this.update.name ===""){
-        this.update.name = this.article.name
-      }
-      if(this.update.description===""){
-        this.update.description = this.article.description
-      }
-      if(this.update.amount===""){
-        this.update.amount = this.article.amount
-      }
-      if(this.update.price===""){
-        this.update.price = this.article.price
-      }
-      if(this.update.acquiredAt===""){
-        this.update.acquiredAt = this.article.acquiredAt
-      }
-      if(this.update.area===""){
-        this.update.area = this.article.area
-      }
-      if(this.update.project===""){
-        this.update.project = this.article.project
-      }
-      if(this.update.comments===""){
-        this.update.comments = this.article.comments
-      }
       axios.post(`https://edyfica-server.herokuapp.com/article/update`,{
-        _id:this.update.id,
+        _id:this.update._id,
         name:this.update.name,
         amount:this.update.amount,
         description:this.update.description,
@@ -247,13 +245,12 @@ export default {
           console.log(res.data.error);
           return;
         }            
-        else {                    
-          this.forceRerender()
-        }
-          console.log(res)
+        this.$refs['my-modal'].hide()        
+        console.log(res)
         }).catch(err => {
           console.log(err);
       })
+      this.forceRerender()
     },
     deleteArticle(id){
        axios.post(`https://edyfica-server.herokuapp.com/article/delete`,{
@@ -263,21 +260,45 @@ export default {
         if (res.data.error) {
           console.log(res.data.error);
           return;
-        }            
-        else {                    
-          this.forceRerender()
-        }
-          console.log(res)
+        }                                
+        
+        console.log(res)
         }).catch(err => {
           console.log(err);
       })
+      this.forceRerender()
     },
-    info(id){
-      this.update.id = id
+    info(item){
+      this.update = item            
+      console.log(item)
       this.$refs['my-modal'].show()
     },
-    forceRerender() {
-      this.tableKey += 1
+    JSON2CSV(){
+      var array = this.items;
+      var str = '';
+      var line = '';      
+      for (var i = 0; i < array.length; i++) {
+       line = '';
+        for (var index in array[i]) {
+          var value = array[i][index] + "";
+          line += '"' + value.replace(/"/g, '""') + '",';
+        }
+        line = line.slice(0, -1);
+        str += line + '\r\n';
+      }
+      return str;
+    },
+    download(){
+      var csv = this.JSON2CSV();
+       var downloadLink = document.createElement("a");
+    var blob = new Blob(["\ufeff", csv]);
+    var url = URL.createObjectURL(blob);
+    downloadLink.href = url;
+    downloadLink.download = "data.csv";
+
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
     }
   },
 }
