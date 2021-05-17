@@ -8,6 +8,7 @@
       <col>
       <col>
       <col>
+      <col>
       <b-thead head-variant="dark">
         <b-tr>
           <b-th>Nombre Completo</b-th>
@@ -15,6 +16,8 @@
           <b-th>Tiempo de salida</b-th>
           <b-th>Pausas</b-th>
           <b-th>Duración</b-th>
+          <b-th>Comentarios Entrada</b-th>
+          <b-th>Comentarios Salida</b-th>
         </b-tr>
       </b-thead>
       <b-tbody>
@@ -28,6 +31,8 @@
             <b-td>Desde: {{new Date(pause.rawPauseBegin).toLocaleTimeString()}} Hasta: {{new Date(pause.rawPauseEnd).toLocaleTimeString()}}</b-td>
           </b-tr>
           <b-td>{{item.duration}}</b-td>
+          <b-td>{{item.entryComments}}</b-td>
+          <b-td>{{item.exitComments}}</b-td>
         </b-tr>
       </b-tbody>
     </b-table-simple>
@@ -68,6 +73,14 @@ export default {
           key:'duration',
           label:'Duración',
           sortable:true
+        },
+        {
+          key:'entryComments',
+          label: 'Comentarios entrada',          
+        },
+        {
+          key:'exitComments',
+          label: 'Comentarios salida'
         }
       ],
       items: [],      
