@@ -13,26 +13,26 @@
         <b-tr>
           <b-th>Nombre Completo</b-th>
           <b-th>Tiempo de entrada</b-th>
-          <b-th>Tiempo de salida</b-th>
-          <b-th>Pausas</b-th>
+          <b-th>Tiempo de salida</b-th>          
           <b-th>Duración</b-th>
           <b-th>Comentarios Entrada</b-th>
           <b-th>Comentarios Salida</b-th>
+          <b-th>Pausas</b-th>
         </b-tr>
       </b-thead>
       <b-tbody>
         <b-tr v-for="(item) in items" :key="item.full_name">
           <b-th>{{item.full_name}}</b-th>
           <b-td>{{new Date(item.rawEntry).toLocaleTimeString('es-MX',{ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',hour:"2-digit", minute:"numeric",second:"numeric"})}}</b-td>
-          <b-td>{{new Date(item.rawExit).toLocaleTimeString('es-MX',{ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',hour:"2-digit", minute:"numeric",second:"numeric"})}}</b-td>
+          <b-td>{{new Date(item.rawExit).toLocaleTimeString('es-MX',{ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',hour:"2-digit", minute:"numeric",second:"numeric"})}}</b-td>          
+          <b-td>{{item.duration}}</b-td>
+          <b-td>{{item.entryComments}}</b-td>
+          <b-td>{{item.exitComments}}</b-td>
           <b-tr v-for="pause in item.pauses" :key="pause.reason">            
             <b-td>Razón: {{pause.pauseReason}}</b-td>
             <b-td>Duración: {{pause.pauseDuration}}</b-td>
             <b-td>Desde: {{new Date(pause.rawPauseBegin).toLocaleTimeString()}} Hasta: {{new Date(pause.rawPauseEnd).toLocaleTimeString()}}</b-td>
           </b-tr>
-          <b-td>{{item.duration}}</b-td>
-          <b-td>{{item.entryComments}}</b-td>
-          <b-td>{{item.exitComments}}</b-td>
         </b-tr>
       </b-tbody>
     </b-table-simple>
